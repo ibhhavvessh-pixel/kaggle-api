@@ -698,188 +698,215 @@ def parse_models(subparsers) -> None:
 
 
 def parse_model_instances(subparsers) -> None:
-    parser_model_instances = subparsers.add_parser(
-        'instances', formatter_class=argparse.RawTextHelpFormatter, help=Help.group_model_instances, aliases=['mi']
-    )
 
-    subparsers_model_instances = parser_model_instances.add_subparsers(title='commands', dest='command')
-    subparsers_model_instances.required = True
-    subparsers_model_instances.choices = Help.model_instances_choices
+    def parse_model_instances_commands(parser_model_instances):
+        subparsers_model_instances = parser_model_instances.add_subparsers(title='commands', dest='command')
+        subparsers_model_instances.required = True
+        subparsers_model_instances.choices = Help.model_instances_choices
 
-    # Models Instances Versions.
-    parse_model_instance_versions(subparsers_model_instances)
+        # Models Instances Versions.
+        parse_model_instance_versions(subparsers_model_instances)
 
-    # Models Instances get
-    parser_model_instance_get = subparsers_model_instances.add_parser(
-        'get', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_get
-    )
-    parser_model_instance_get_optional = parser_model_instance_get._action_groups.pop()
-    parser_model_instance_get_optional.add_argument('model_instance', help=Help.param_model_instance)
-    parser_model_instance_get_optional.add_argument(
-        '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_downfile
-    )
-    parser_model_instance_get._action_groups.append(parser_model_instance_get_optional)
-    parser_model_instance_get.set_defaults(func=api.model_instance_get_cli)
+        # Models Instances get
+        parser_model_instance_get = subparsers_model_instances.add_parser(
+            'get', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_get
+        )
+        parser_model_instance_get_optional = parser_model_instance_get._action_groups.pop()
+        parser_model_instance_get_optional.add_argument('model_instance', help=Help.param_model_instance)
+        parser_model_instance_get_optional.add_argument(
+            '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_downfile
+        )
+        parser_model_instance_get._action_groups.append(parser_model_instance_get_optional)
+        parser_model_instance_get.set_defaults(func=api.model_instance_get_cli)
 
-    # Model Instances init
-    parser_model_instances_init = subparsers_model_instances.add_parser(
-        'init', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_init
-    )
-    parser_model_instances_init_optional = parser_model_instances_init._action_groups.pop()
-    parser_model_instances_init_optional.add_argument(
-        '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
-    )
-    parser_model_instances_init._action_groups.append(parser_model_instances_init_optional)
-    parser_model_instances_init.set_defaults(func=api.model_instance_initialize_cli)
+        # Model Instances init
+        parser_model_instances_init = subparsers_model_instances.add_parser(
+            'init', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_init
+        )
+        parser_model_instances_init_optional = parser_model_instances_init._action_groups.pop()
+        parser_model_instances_init_optional.add_argument(
+            '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
+        )
+        parser_model_instances_init._action_groups.append(parser_model_instances_init_optional)
+        parser_model_instances_init.set_defaults(func=api.model_instance_initialize_cli)
 
-    # Model Instances create
-    parser_model_instances_create = subparsers_model_instances.add_parser(
-        'create', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_new
-    )
-    parser_model_instances_create_optional = parser_model_instances_create._action_groups.pop()
-    parser_model_instances_create_optional.add_argument(
-        '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
-    )
-    parser_model_instances_create_optional.add_argument(
-        '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
-    )
-    parser_model_instances_create_optional.add_argument(
-        '-r', '--dir-mode', dest='dir_mode', choices=['skip', 'zip', 'tar'], default='skip', help=Help.param_dir_mode
-    )
-    parser_model_instances_create._action_groups.append(parser_model_instances_create_optional)
-    parser_model_instances_create.set_defaults(func=api.model_instance_create_cli)
+        # Model Instances create
+        parser_model_instances_create = subparsers_model_instances.add_parser(
+            'create', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_new
+        )
+        parser_model_instances_create_optional = parser_model_instances_create._action_groups.pop()
+        parser_model_instances_create_optional.add_argument(
+            '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
+        )
+        parser_model_instances_create_optional.add_argument(
+            '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
+        )
+        parser_model_instances_create_optional.add_argument(
+            '-r',
+            '--dir-mode',
+            dest='dir_mode',
+            choices=['skip', 'zip', 'tar'],
+            default='skip',
+            help=Help.param_dir_mode,
+        )
+        parser_model_instances_create._action_groups.append(parser_model_instances_create_optional)
+        parser_model_instances_create.set_defaults(func=api.model_instance_create_cli)
 
-    # Model Instances files
-    parser_model_instances_files = subparsers_model_instances.add_parser(
-        'files', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_files
-    )
-    parser_model_instances_files_optional = parser_model_instances_files._action_groups.pop()
-    parser_model_instances_files_optional.add_argument('model_instance', help=Help.param_model_instance)
-    parser_model_instances_files_optional.add_argument(
-        '-v', '--csv', dest='csv_display', action='store_true', help=Help.param_csv
-    )
-    parser_model_instances_files_optional.add_argument(
-        '--page-size', dest='page_size', default=20, type=int, help=Help.param_page_size
-    )
-    parser_model_instances_files_optional.add_argument(
-        '--page-token', dest='page_token', required=False, help=Help.param_page_token
-    )
-    parser_model_instances_files._action_groups.append(parser_model_instances_files_optional)
-    parser_model_instances_files.set_defaults(func=api.model_instance_files_cli)
+        # Model Instances files
+        parser_model_instances_files = subparsers_model_instances.add_parser(
+            'files', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_files
+        )
+        parser_model_instances_files_optional = parser_model_instances_files._action_groups.pop()
+        parser_model_instances_files_optional.add_argument('model_instance', help=Help.param_model_instance)
+        parser_model_instances_files_optional.add_argument(
+            '-v', '--csv', dest='csv_display', action='store_true', help=Help.param_csv
+        )
+        parser_model_instances_files_optional.add_argument(
+            '--page-size', dest='page_size', default=20, type=int, help=Help.param_page_size
+        )
+        parser_model_instances_files_optional.add_argument(
+            '--page-token', dest='page_token', required=False, help=Help.param_page_token
+        )
+        parser_model_instances_files._action_groups.append(parser_model_instances_files_optional)
+        parser_model_instances_files.set_defaults(func=api.model_instance_files_cli)
 
-    # Models Instances delete
-    parser_model_instances_delete = subparsers_model_instances.add_parser(
-        'delete', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_delete
-    )
-    parser_model_instances_delete_optional = parser_model_instances_delete._action_groups.pop()
-    parser_model_instances_delete_optional.add_argument('model_instance', help=Help.param_model_instance)
-    parser_model_instances_delete_optional.add_argument(
-        '-y', '--yes', dest='yes', action='store_true', help=Help.param_yes
-    )
-    parser_model_instances_delete._action_groups.append(parser_model_instances_delete_optional)
-    parser_model_instances_delete.set_defaults(func=api.model_instance_delete_cli)
+        # Models Instances delete
+        parser_model_instances_delete = subparsers_model_instances.add_parser(
+            'delete', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_delete
+        )
+        parser_model_instances_delete_optional = parser_model_instances_delete._action_groups.pop()
+        parser_model_instances_delete_optional.add_argument('model_instance', help=Help.param_model_instance)
+        parser_model_instances_delete_optional.add_argument(
+            '-y', '--yes', dest='yes', action='store_true', help=Help.param_yes
+        )
+        parser_model_instances_delete._action_groups.append(parser_model_instances_delete_optional)
+        parser_model_instances_delete.set_defaults(func=api.model_instance_delete_cli)
 
-    # Models Instances update
-    parser_model_instances_update = subparsers_model_instances.add_parser(
-        'update', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_update
+        # Models Instances update
+        parser_model_instances_update = subparsers_model_instances.add_parser(
+            'update', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instances_update
+        )
+        parser_model_instances_update_optional = parser_model_instances_update._action_groups.pop()
+        parser_model_instances_update_optional.add_argument(
+            '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
+        )
+        parser_model_instances_update._action_groups.append(parser_model_instances_update_optional)
+        parser_model_instances_update.set_defaults(func=api.model_instance_update_cli)
+
+    # add_parser() has a parameter named 'aliases' but it does not work reliably.
+    parse_model_instances_commands(
+        subparsers.add_parser('i', formatter_class=argparse.RawTextHelpFormatter, help=Help.group_model_instances)
     )
-    parser_model_instances_update_optional = parser_model_instances_update._action_groups.pop()
-    parser_model_instances_update_optional.add_argument(
-        '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_upfile
+    parse_model_instances_commands(
+        subparsers.add_parser(
+            'instances', formatter_class=argparse.RawTextHelpFormatter, help=Help.group_model_instances
+        )
     )
-    parser_model_instances_update._action_groups.append(parser_model_instances_update_optional)
-    parser_model_instances_update.set_defaults(func=api.model_instance_update_cli)
 
 
 def parse_model_instance_versions(subparsers) -> None:
-    parser_model_instance_versions = subparsers.add_parser(
-        'versions',
-        formatter_class=argparse.RawTextHelpFormatter,
-        help=Help.group_model_instance_versions,
-        aliases=['miv'],
-    )
+    def parse_model_instance_versions(parser_model_instance_versions) -> None:
+        subparsers_model_intance_versions = parser_model_instance_versions.add_subparsers(
+            title='commands', dest='command'
+        )
+        subparsers_model_intance_versions.required = True
+        subparsers_model_intance_versions.choices = Help.model_instance_versions_choices
 
-    subparsers_model_intance_versions = parser_model_instance_versions.add_subparsers(title='commands', dest='command')
-    subparsers_model_intance_versions.required = True
-    subparsers_model_intance_versions.choices = Help.model_instance_versions_choices
+        # Model Instance Versions create
+        parser_model_instance_versions_create = subparsers_model_intance_versions.add_parser(
+            'create', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_new
+        )
+        parser_model_instance_versions_create_optional = parser_model_instance_versions_create._action_groups.pop()
+        parser_model_instance_versions_create_optional.add_argument('model_instance', help=Help.param_model_instance)
+        parser_model_instance_versions_create_optional.add_argument(
+            '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_version_upfile
+        )
+        parser_model_instance_versions_create_optional.add_argument(
+            '-n', '--version-notes', dest='version_notes', required=False, help=Help.param_model_instance_version_notes
+        )
+        parser_model_instance_versions_create_optional.add_argument(
+            '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
+        )
+        parser_model_instance_versions_create_optional.add_argument(
+            '-r',
+            '--dir-mode',
+            dest='dir_mode',
+            choices=['skip', 'zip', 'tar'],
+            default='skip',
+            help=Help.param_dir_mode,
+        )
+        parser_model_instance_versions_create._action_groups.append(parser_model_instance_versions_create_optional)
+        parser_model_instance_versions_create.set_defaults(func=api.model_instance_version_create_cli)
 
-    # Model Instance Versions create
-    parser_model_instance_versions_create = subparsers_model_intance_versions.add_parser(
-        'create', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_new
-    )
-    parser_model_instance_versions_create_optional = parser_model_instance_versions_create._action_groups.pop()
-    parser_model_instance_versions_create_optional.add_argument('model_instance', help=Help.param_model_instance)
-    parser_model_instance_versions_create_optional.add_argument(
-        '-p', '--path', dest='folder', required=False, help=Help.param_model_instance_version_upfile
-    )
-    parser_model_instance_versions_create_optional.add_argument(
-        '-n', '--version-notes', dest='version_notes', required=False, help=Help.param_model_instance_version_notes
-    )
-    parser_model_instance_versions_create_optional.add_argument(
-        '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
-    )
-    parser_model_instance_versions_create_optional.add_argument(
-        '-r', '--dir-mode', dest='dir_mode', choices=['skip', 'zip', 'tar'], default='skip', help=Help.param_dir_mode
-    )
-    parser_model_instance_versions_create._action_groups.append(parser_model_instance_versions_create_optional)
-    parser_model_instance_versions_create.set_defaults(func=api.model_instance_version_create_cli)
+        # Models Instance Versions download
+        parser_model_instance_versions_download = subparsers_model_intance_versions.add_parser(
+            'download',
+            formatter_class=argparse.RawTextHelpFormatter,
+            help=Help.command_model_instance_versions_download,
+        )
+        parser_model_instance_versions_download_optional = parser_model_instance_versions_download._action_groups.pop()
+        parser_model_instance_versions_download_optional.add_argument(
+            'model_instance_version', help=Help.param_model_instance_version
+        )
+        parser_model_instance_versions_download_optional.add_argument(
+            '-p', '--path', dest='path', required=False, help=Help.param_downfolder
+        )
+        parser_model_instance_versions_download_optional.add_argument(
+            '--untar', dest='untar', action='store_true', help=Help.param_untar
+        )
+        parser_model_instance_versions_download_optional.add_argument(
+            '-f', '--force', dest='force', action='store_true', help=Help.param_force
+        )
+        parser_model_instance_versions_download_optional.add_argument(
+            '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
+        )
+        parser_model_instance_versions_download._action_groups.append(parser_model_instance_versions_download_optional)
+        parser_model_instance_versions_download.set_defaults(func=api.model_instance_version_download_cli)
 
-    # Models Instance Versions download
-    parser_model_instance_versions_download = subparsers_model_intance_versions.add_parser(
-        'download', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_download
-    )
-    parser_model_instance_versions_download_optional = parser_model_instance_versions_download._action_groups.pop()
-    parser_model_instance_versions_download_optional.add_argument(
-        'model_instance_version', help=Help.param_model_instance_version
-    )
-    parser_model_instance_versions_download_optional.add_argument(
-        '-p', '--path', dest='path', required=False, help=Help.param_downfolder
-    )
-    parser_model_instance_versions_download_optional.add_argument(
-        '--untar', dest='untar', action='store_true', help=Help.param_untar
-    )
-    parser_model_instance_versions_download_optional.add_argument(
-        '-f', '--force', dest='force', action='store_true', help=Help.param_force
-    )
-    parser_model_instance_versions_download_optional.add_argument(
-        '-q', '--quiet', dest='quiet', action='store_true', help=Help.param_quiet
-    )
-    parser_model_instance_versions_download._action_groups.append(parser_model_instance_versions_download_optional)
-    parser_model_instance_versions_download.set_defaults(func=api.model_instance_version_download_cli)
+        # Models Instance Versions files
+        parser_model_instance_versions_files = subparsers_model_intance_versions.add_parser(
+            'files', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_files
+        )
+        parser_model_instance_versions_files_optional = parser_model_instance_versions_files._action_groups.pop()
+        parser_model_instance_versions_files_optional.add_argument(
+            'model_instance_version', help=Help.param_model_instance_version
+        )
+        parser_model_instance_versions_files_optional.add_argument(
+            '-v', '--csv', dest='csv_display', action='store_true', help=Help.param_csv
+        )
+        parser_model_instance_versions_files_optional.add_argument(
+            '--page-size', dest='page_size', default=20, type=int, help=Help.param_page_size
+        )
+        parser_model_instance_versions_files_optional.add_argument(
+            '--page-token', dest='page_token', required=False, help=Help.param_page_token
+        )
+        parser_model_instance_versions_files._action_groups.append(parser_model_instance_versions_files_optional)
+        parser_model_instance_versions_files.set_defaults(func=api.model_instance_version_files_cli)
 
-    # Models Instance Versions files
-    parser_model_instance_versions_files = subparsers_model_intance_versions.add_parser(
-        'files', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_files
-    )
-    parser_model_instance_versions_files_optional = parser_model_instance_versions_files._action_groups.pop()
-    parser_model_instance_versions_files_optional.add_argument(
-        'model_instance_version', help=Help.param_model_instance_version
-    )
-    parser_model_instance_versions_files_optional.add_argument(
-        '-v', '--csv', dest='csv_display', action='store_true', help=Help.param_csv
-    )
-    parser_model_instance_versions_files_optional.add_argument(
-        '--page-size', dest='page_size', default=20, type=int, help=Help.param_page_size
-    )
-    parser_model_instance_versions_files_optional.add_argument(
-        '--page-token', dest='page_token', required=False, help=Help.param_page_token
-    )
-    parser_model_instance_versions_files._action_groups.append(parser_model_instance_versions_files_optional)
-    parser_model_instance_versions_files.set_defaults(func=api.model_instance_version_files_cli)
+        # Models Instance Versions delete
+        parser_model_instance_versions_delete = subparsers_model_intance_versions.add_parser(
+            'delete', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_delete
+        )
+        parser_model_instance_versions_delete_optional = parser_model_instance_versions_delete._action_groups.pop()
+        parser_model_instance_versions_delete_optional.add_argument(
+            'model_instance_version', help=Help.param_model_instance_version
+        )
+        parser_model_instance_versions_delete_optional.add_argument(
+            '-y', '--yes', dest='yes', action='store_true', help=Help.param_yes
+        )
+        parser_model_instance_versions_delete._action_groups.append(parser_model_instance_versions_delete_optional)
+        parser_model_instance_versions_delete.set_defaults(func=api.model_instance_version_delete_cli)
 
-    # Models Instance Versions delete
-    parser_model_instance_versions_delete = subparsers_model_intance_versions.add_parser(
-        'delete', formatter_class=argparse.RawTextHelpFormatter, help=Help.command_model_instance_versions_delete
+    parse_model_instance_versions(
+        subparsers.add_parser(
+            'versions', formatter_class=argparse.RawTextHelpFormatter, help=Help.group_model_instance_versions
+        )
     )
-    parser_model_instance_versions_delete_optional = parser_model_instance_versions_delete._action_groups.pop()
-    parser_model_instance_versions_delete_optional.add_argument(
-        'model_instance_version', help=Help.param_model_instance_version
+    parse_model_instance_versions(
+        subparsers.add_parser(
+            'v', formatter_class=argparse.RawTextHelpFormatter, help=Help.group_model_instance_versions
+        )
     )
-    parser_model_instance_versions_delete_optional.add_argument(
-        '-y', '--yes', dest='yes', action='store_true', help=Help.param_yes
-    )
-    parser_model_instance_versions_delete._action_groups.append(parser_model_instance_versions_delete_optional)
-    parser_model_instance_versions_delete.set_defaults(func=api.model_instance_version_delete_cli)
 
 
 def parse_files(subparsers) -> None:
@@ -958,8 +985,8 @@ class Help(object):
     competitions_choices = ['list', 'files', 'download', 'submit', 'submissions', 'leaderboard']
     datasets_choices = ['list', 'files', 'download', 'create', 'version', 'init', 'metadata', 'status', 'delete']
     kernels_choices = ['list', 'files', 'init', 'push', 'pull', 'output', 'status', 'delete']
-    models_choices = ['instances', 'get', 'list', 'init', 'create', 'delete', 'update']
-    model_instances_choices = ['versions', 'get', 'files', 'init', 'create', 'delete', 'update']
+    models_choices = ['instances', 'i', 'get', 'list', 'init', 'create', 'delete', 'update']
+    model_instances_choices = ['versions', 'v', 'get', 'files', 'init', 'create', 'delete', 'update']
     model_instance_versions_choices = ['init', 'create', 'download', 'delete', 'files']
     files_choices = ['upload']
     config_choices = ['view', 'set', 'unset']
